@@ -1,3 +1,5 @@
+This is a modified version of [nginx-proxy][3] docker container to build on a raspberry-pi.
+
 nginx-proxy sets up a container running nginx and [docker-gen][1].  docker-gen generate reverse proxy configs for nginx and reloads nginx when containers they are started and stopped.
 
 See [Automated Nginx Reverse Proxy for Docker][2] for why you might want to use this.
@@ -20,6 +22,7 @@ If your container exposes multiple ports, nginx-proxy will default to the servic
 
   [1]: https://github.com/jwilder/docker-gen
   [2]: http://jasonwilder.com/blog/2014/03/25/automated-nginx-reverse-proxy-for-docker/
+  [3]: https://github.com/jwilder/nginx-proxy
 
 ### Multiple Hosts
 
