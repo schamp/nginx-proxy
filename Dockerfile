@@ -1,10 +1,14 @@
 FROM  resin/rpi-raspbian
 MAINTAINER Andrew Schamp <schamp@gmail.com>
 RUN apt-get update &&\
-    apt-get install -y git mercurial golang nginx &&\
-    apt-get clean
-
-RUN echo "daemon off;" >> /etc/nginx/nginx.conf
+    apt-get install -y -q --no-install-recommends \
+    ca-certificates \
+    git \
+    wget \
+    nginx \
+    golang \
+  && apt-get clean \
+  && rm -r /var/lib/apt/lists/*
 
 # Configure Nginx and apply fix for very long server names
 RUN echo "daemon off;" >> /etc/nginx/nginx.conf \
@@ -12,10 +16,20 @@ RUN echo "daemon off;" >> /etc/nginx/nginx.conf \
 
 ENV GOPATH /opt/go
 ENV PATH $PATH:$GOPATH/bin
-RUN go get -u github.com/jwilder/docker-gen && go get -u github.com/ddollar/forego
+RUN go get -u github.com/ddollar/forego
 
-#ADD data/ /opt/app
-#WORKDIR /opt/app
+ENV DOCKER_GEN_VERSION 0.7.1
+
+RUN wget https://github.com/jwilder/docker-gen/releases/download/$DOCKER_GEN_VERSION/docker-gen-linux-armhf-$DOCKER_GEN_VERSION.tar.gz \
+  && tar -C /usr/local/bin -xvzf docker-gen-linux-armhf-$DOCKER_GEN_VERSION.tar.gz \
+  && rm /docker-gen-linux-armhf-$DOCKER_GEN_VERSION.tar.gz
+
+RUN apt-get autoremove --purge git wget golang \
+  && apt-get clean \
+  ^&& rm -r /var/lib/apt/lists/*
+
+COPY . /app/
+WORKDIR /app/
 
 ENV DOCKER_HOST unix:///tmp/docker.sock
 
